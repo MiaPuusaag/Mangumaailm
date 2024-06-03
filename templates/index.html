@@ -201,15 +201,6 @@
                 coffeeImagesDiv.appendChild(coffee5Image);
                 makeImageDraggable(coffee5Image);
             }
-
-            document.getElementById('moneyValue').textContent = money;
-            document.getElementById('coffeeCountValue').textContent = coffeeCount;
-            document.getElementById('image2CountValue').textContent = image2Count;
-            document.getElementById('image3CountValue').textContent = image3Count;
-            document.getElementById('image4CountValue').textContent = image4Count;
-            document.getElementById('image5CountValue').textContent = image5Count;
-            document.getElementById('levelValue').textContent = level;
-
         };
         
         let money = localStorage.getItem('money');
@@ -257,6 +248,14 @@
         } else {
             image5Count = parseInt(image5Count);
         }
+
+        document.getElementById('moneyValue').textContent = money;
+        document.getElementById('coffeeCountValue').textContent = coffeeCount;
+        document.getElementById('image2CountValue').textContent = image2Count;
+        document.getElementById('image3CountValue').textContent = image3Count;
+        document.getElementById('image4CountValue').textContent = image4Count;
+        document.getElementById('image5CountValue').textContent = image5Count;
+        document.getElementById('levelValue').textContent = level;
         
     
         function updateLevelDisplay() {
