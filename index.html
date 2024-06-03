@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kohvimaania</title>
+    <style>
+        body {
+            background-color: #FFC0CB; /* Rose color */
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Align items at the top */
+            min-height: 100vh; /* Ensure full height */
+        }
+        .container {
+            position: relative; /* Make container relative for absolute positioning */
+            width: calc(100% - 2cm); /* Width of the container */
+            min-height: calc(100vh - 2cm); /* Minimum height of the container */
+            border: 3mm solid #FFFFFF; /* White border with 3mm width */
+            box-sizing: border-box; /* Include border in width and height calculations */
+            padding: 1cm; /* Padding inside the container */
+            display: flex;
+            justify-content: center;
+            flex-direction: column; /* Arrange children in a column */
+            align-items: center; /* Center children horizontally */
+            overflow: hidden; /* Prevent overflow */
+            margin-top: 3%; /* Distance from the top of the screen */
+        }
+        .coffee-img {
+            cursor: move; /* Set cursor to indicate draggable element */
+            width: 200px; /* Set width of the image */
+            height: 200px; /* Set height of the image */
+        }
+        .button {
+            background-color: #FFFFFF; /* White color */
+            color: black; /* Text color */
+            padding: 15px 20px; /* Padding around the button text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Change cursor on hover */
+            margin-top: 20px;
+        }
+        .button:active {
+            background-color: #ffd5dc; /* Color when button is clicked */
+        }
+        #level {
+            position: absolute;
+            top: 10px;
+            left: 1020px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px;
+            margin-top: 5px;
+        }
+        #coffeeCount, #image2Count, #image3Count, #image4Count, #image5Count {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px;
+            margin-top: 5px;
+        }
+        #coffeeCount {
+            left: 20px;
+        }
+        #image2Count {
+            left: 220px;
+        }
+        #image3Count {
+            left: 420px;
+        }
+        #image4Count {
+            left: 620px;
+        }
+        #image5Count {
+            left: 820px;
+        }
+        #money {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #additional-coffee-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 20px;
+        }
+        /* Modal Styles */
+        .modal {
+            display: flex; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color:   rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: hsl(80, 100%, 82%);
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 1000 px;
+            text-align: center;
+        }
+        .close {
+            color: #ffa3a3;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal -->
+    <div id="rulesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Game Rules</h2>
+            <p>1. Click "Click Me" to earn money.</p>
+            <p>2. Use money to buy coffee by clicking "Buy Coffee".</p>
+            <p>3. Drag and drop coffee images to merge them and create new coffee types.</p>
+            <p>4. Enjoy the game!</p>
+            <button class="button" onclick="closeModal()">OK</button>
+        </div>  
+    </div>
+    
+    <div class="container" id="container">
+        <button class="button" onclick="increaseMoney()" style="position: absolute; right: 10px; top: 30px;">Click Me</button>
+        <button class="button" onclick="buyCoffee()" style="position: absolute; right: 10px; top: 90px;">Buy Coffee</button>
+        <div id="money" style="background-color: rgba(255, 255, 255, 0.7);">Money: <span id="moneyValue">{{ money }}</span></div>
+        <div id="coffeeCount">Coffee 1 Count: <span id="coffeeCountValue"></span></div>
+        <div id="image2Count">Coffee 2 Count: <span id="image2CountValue"></span></div>
+        <div id="image3Count">Coffee 3 Count: <span id="image3CountValue"></span></div>
+        <div id="image4Count">Coffee 4 Count: <span id="image4CountValue"></span></div>
+        <div id="image5Count">Coffee 5 Count: <span id="image5CountValue"></span></div>
+        <div id="level">Level: <span id="levelValue"></span></div>
+        <div id="additional-coffee-images"></div>
+        <div id="congratulationsMessage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4.1em; color: rgb(0, 0, 0); background-color: hsl(80, 100%, 82%);"></div>
+    </div>
+
+    <script>
+        // Modal script
+        function closeModal() {
+            document.getElementById('rulesModal').style.display = "none";
+        }
+
+        window.onload = function() {
+            document.getElementById('rulesModal').style.display = "flex";
+            
+            const coffeeImagesDiv = document.getElementById('additional-coffee-images');
+            for (let i = 0; i < coffeeCount; i++) {
+                const coffeeImage = document.createElement('img');
+                coffeeImage.src = "images/coffee.jpg";
+                coffeeImage.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffeeImage);
+                makeImageDraggable(coffeeImage);
+            }
+
+            for (let i = 0; i < image2Count; i++) {
+                const coffee2Image = document.createElement('img');
+                coffee2Image.src = "images/coffee2.jpg";
+                coffee2Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee2Image);
+                makeImageDraggable(coffee2Image);
+            }
+
+            for (let i = 0; i < image3Count; i++) {
+                const coffee3Image = document.createElement('img');
+                coffee3Image.src = "images/coffee3.jpg";
+                coffee3Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee3Image);
+                makeImageDraggable(coffee3Image);
+            }
+
+            for (let i = 0; i < image4Count; i++) {
+                const coffee4Image = document.createElement('img');
+                coffee4Image.src = "images/coffee4.jpg";
+                coffee4Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee4Image);
+                makeImageDraggable(coffee4Image);
+            }
+
+            for (let i = 0; i < image5Count; i++) {
+                const coffee5Image = document.createElement('img');
+                coffee5Image.src = "images/coffee5.jpg";
+                coffee5Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee5Image);
+                makeImageDraggable(coffee5Image);
+            }
+
+            document.getElementById('moneyValue').textContent = money;
+            document.getElementById('coffeeCountValue').textContent = coffeeCount;
+            document.getElementById('image2CountValue').textContent = image2Count;
+            document.getElementById('image3CountValue').textContent = image3Count;
+            document.getElementById('image4CountValue').textContent = image4Count;
+            document.getElementById('image5CountValue').textContent = image5Count;
+            document.getElementById('levelValue').textContent = level;
+
+        };
+        
+        let money = localStorage.getItem('money');
+        let coffeeCount = localStorage.getItem('coffeeCount') || 0;
+        let image2Count = localStorage.getItem('image2Count') || 0;
+        let image3Count = localStorage.getItem('image3Count') || 0;
+        let image4Count = localStorage.getItem('image4Count') || 0;
+        let image5Count = localStorage.getItem('image5Count') || 0;
+        let level = localStorage.getItem('level') || 1;
+        
+        
+        
+        if (level === null || isNaN(level)) {
+            level = 0;
+        } else {
+            level = parseInt(level);
+        }
+        if (money === null || isNaN(money)) {
+            money = 0;
+        } else {
+            money = parseInt(money);
+        }
+        if (coffeeCount === null || isNaN(coffeeCount)) {
+            coffeeCount = 0;
+        } else {
+            coffeeCount = parseInt(coffeeCount);
+        }
+        if (image2Count === null || isNaN(image2Count)) {
+            image2Count = 0;
+        } else {
+            image2Count = parseInt(image2Count);
+        }
+        if (image3Count === null || isNaN(image3Count)) {
+            image3Count = 0;
+        } else {
+            image3Count = parseInt(image3Count);
+        }
+        if (image4Count === null || isNaN(image4Count)) {
+            image4Count = 0;
+        } else {
+            image4Count = parseInt(image4Count);
+        }
+        if (image5Count === null || isNaN(image5Count)) {
+            image5Count = 0;
+        } else {
+            image5Count = parseInt(image5Count);
+        }
+        
+    
+        function updateLevelDisplay() {
+            document.getElementById('levelValue').textContent = level;
+        }
+
+
+        function increaseMoney() {
+            money += 10000;
+            document.getElementById('moneyValue').textContent = money;
+            localStorage.setItem('money', money);
+        }
+
+        function buyCoffee() {
+            const coffeePrice = 10;
+
+            if (money >= coffeePrice) {
+                money -= coffeePrice;
+                document.getElementById('moneyValue').textContent = money;
+                localStorage.setItem('money', money);
+
+                coffeeCount++;
+                localStorage.setItem('coffeeCount', coffeeCount);
+                document.getElementById('moneyValue').textContent = money;
+                document.getElementById('coffeeCountValue').textContent = coffeeCount;
+
+                const coffeeImagesDiv = document.getElementById('additional-coffee-images');
+                const newCoffeeImage = document.createElement('img');
+                newCoffeeImage.src = "images/coffee.jpg";
+                newCoffeeImage.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(newCoffeeImage);
+                makeImageDraggable(newCoffeeImage);
+            }
+        }
+
+        // Function to make image draggable
+        function makeImageDraggable(image) {
+            const container = document.getElementById('container');
+            const containerRect = container.getBoundingClientRect();
+            
+            image.onmousedown = function(event) {
+                var img = this; // 'this' refers to the image that is being clicked on
+                event.preventDefault();
+
+                var shiftX = event.clientX - img.getBoundingClientRect().left;
+                var shiftY = event.clientY - img.getBoundingClientRect().top;
+
+                img.style.position = 'absolute';
+                img.style.zIndex = 1000;
+                document.body.append(img);
+
+                moveAt(event.pageX, event.pageY);
+
+                function moveAt(pageX, pageY) {
+                    let newLeft = pageX - shiftX;
+                    let newTop = pageY - shiftY;
+
+                    // Ensure image stays within the container (white frame)
+                    newLeft = Math.max(newLeft, containerRect.left);
+                    newLeft = Math.min(newLeft, containerRect.right - img.offsetWidth);
+                    newTop = Math.max(newTop, containerRect.top);
+                    newTop = Math.min(newTop, containerRect.bottom - img.offsetHeight);
+
+                    img.style.left = newLeft + 'px';
+                    img.style.top = newTop + 'px';
+                }
+
+                function onMouseMove(event) {
+                    // Check if cursor is within container bounds
+                    if (event.pageX < containerRect.left || event.pageX > containerRect.right ||
+                        event.pageY < containerRect.top || event.pageY > containerRect.bottom) {
+                        document.removeEventListener('mousemove', onMouseMove);
+                        img.onmouseup = null;
+                        return;
+                    }
+
+                    moveAt(event.pageX, event.pageY);
+                    checkCollisions(img);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+
+                img.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    img.onmouseup = null;
+                };
+
+            };
+
+            image.ondragstart = function() {
+                return false;
+            };
+
+        }
+
+        function checkCollisions(movingImg) {
+            const coffeeImages = document.getElementsByClassName('coffee-img');
+            for (let img of coffeeImages) {
+                if (img !== movingImg && img.src === movingImg.src && isColliding(movingImg, img)) {
+                    handleCollision(movingImg, img);
+                    break;
+                }
+            }
+        }
+
+        function isColliding(img1, img2) {
+            const rect1 = img1.getBoundingClientRect();
+            const rect2 = img2.getBoundingClientRect();
+
+            const center1 = { x: rect1.left + rect1.width / 2, y: rect1.top + rect1.height / 2 };
+            const center2 = { x: rect2.left + rect2.width / 2, y: rect2.top + rect2.height / 2 };
+
+            const distance = Math.sqrt((center1.x - center2.x) ** 2 + (center1.y - center2.y) ** 2);
+            const collisionDistance = 10; // Adjust this value based on your requirement
+
+            return distance <= collisionDistance;
+        }
+
+        function handleCollision(img1, img2) {
+            const src1 = img1.src.split('/').pop();
+            const src2 = img2.src.split('/').pop();
+
+            if (src1 === 'coffee.jpg' && src2 === 'coffee.jpg') {
+                coffeeCount -= 2;
+                localStorage.setItem('coffeeCount', coffeeCount);
+                document.getElementById('coffeeCountValue').textContent = coffeeCount;
+
+                addNewImage('coffee2.jpg', img1.style.left, img1.style.top);
+                image2Count++;
+                localStorage.setItem('image2Count', image2Count);
+                document.getElementById('image2CountValue').textContent = image2Count;
+            } else if (src1 === 'coffee2.jpg' && src2 === 'coffee2.jpg') {
+                image2Count -= 2;
+                localStorage.setItem('image2Count', image2Count);
+                document.getElementById('image2CountValue').textContent = image2Count;
+
+                addNewImage('coffee3.jpg', img1.style.left, img1.style.top);
+                image3Count++;
+                localStorage.setItem('image3Count', image3Count);
+                document.getElementById('image3CountValue').textContent = image3Count;
+            } else if (src1 === 'coffee3.jpg' && src2 === 'coffee3.jpg') {
+                image3Count -= 2;
+                localStorage.setItem('image3Count', image3Count);
+                document.getElementById('image3CountValue').textContent = image3Count;
+
+                addNewImage('coffee4.jpg', img1.style.left, img1.style.top);
+                image4Count++;
+                localStorage.setItem('image4Count', image4Count);
+                document.getElementById('image4CountValue').textContent = image4Count;
+            } else if (src1 === 'coffee4.jpg' && src2 === 'coffee4.jpg') {
+                image4Count -= 2;
+                localStorage.setItem('image4Count', image4Count);
+                document.getElementById('image4CountValue').textContent = image4Count;
+
+                addNewImage('coffee5.jpg', img1.style.left, img1.style.top);
+                image5Count++;
+                localStorage.setItem('image5Count', image5Count);
+                document.getElementById('image5CountValue').textContent = image5Count;
+            } else if (src1 === 'coffee5.jpg' && src2 === 'coffee5.jpg') {
+                const currentWidth = parseInt(img1.style.width) || 200;
+                const currentHeight = parseInt(img1.style.height) || 200;
+                const newSize = Math.min(currentWidth * 1.5, 1000);
+
+                if (newSize <= 300) {
+                    image5Count -= 2;
+                    localStorage.setItem('image5Count', image5Count);
+                    document.getElementById('image5CountValue').textContent = image5Count;
+
+                    addNewImage('coffee5.jpg', img1.style.left, img1.style.top, newSize + 'px', newSize + 'px');
+                    image5Count++;
+                    localStorage.setItem('image5Count', image5Count);
+                    document.getElementById('image5CountValue').textContent = image5Count;
+                } else {
+                    // Display " Congratulations, You won! " message
+                    document.getElementById('congratulationsMessage').textContent = "Congratulations, You won!";
+
+                    level++;
+                    localStorage.setItem('level', level);
+                    updateLevelDisplay();
+
+                    // Add click event listener to reset the game on click
+                    document.getElementById('congratulationsMessage').textContent = "Congratulations, You won!";
+                    document.getElementById('container').onclick = resetGameOnClick;
+
+
+                    img1.style.width = newSize + 'px';
+                    img1.style.height = newSize + 'px';
+                }
+
+                
+            }
+
+            img1.remove();
+            img2.remove();
+        }
+
+        // Function to reset the game
+        function resetGame() {
+            // Clear local storage
+            localStorage.clear();
+
+            // Reset coffee counts
+            document.getElementById('coffeeCountValue').textContent = 0;
+            document.getElementById('image2CountValue').textContent = 0;
+            document.getElementById('image3CountValue').textContent = 0;
+            document.getElementById('image4CountValue').textContent = 0;
+            document.getElementById('image5CountValue').textContent = 0;
+
+            // Remove all images from the image container
+            const coffeeImagesDiv = document.getElementById('additional-coffee-images');
+            coffeeImagesDiv.innerHTML = '';
+
+
+            // Hide the congratulations message
+            document.getElementById('congratulationsMessage').textContent = '';
+        }
+
+        // Function to reset the game on click
+        function resetGameOnClick(event) {
+            resetGame();
+        }
+
+        
+
+        function addNewImage(imageSrc, left, top, width = '200px', height = '200px') {
+            const newImage = document.createElement('img');
+            newImage.src = "images/" + imageSrc;
+            newImage.className = 'coffee-img';
+            newImage.style.position = 'absolute';
+            newImage.style.left = left;
+            newImage.style.top = top;
+            newImage.style.width = width;
+            newImage.style.height = height;
+            document.body.appendChild(newImage);
+
+            makeImageDraggable(newImage);
+        }
+
+        window.onload = function() {
+            const coffeeImagesDiv = document.getElementById('additional-coffee-images');
+            for (let i = 0; i < coffeeCount; i++) {
+                const coffeeImage = document.createElement('img');
+                coffeeImage.src = "images/coffee.jpg";
+                coffeeImage.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffeeImage);
+                makeImageDraggable(coffeeImage);
+            }
+
+            for (let i = 0; i < image2Count; i++) {
+                const coffee2Image = document.createElement('img');
+                coffee2Image.src = "images/coffee2.jpg";
+                coffee2Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee2Image);
+                makeImageDraggable(coffee2Image);
+            }
+
+            for (let i = 0; i < image3Count; i++) {
+                const coffee3Image = document.createElement('img');
+                coffee3Image.src = "images/coffee3.jpg";
+                coffee3Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee3Image);
+                makeImageDraggable(coffee3Image);
+            }
+
+            for (let i = 0; i < image4Count; i++) {
+                const coffee4Image = document.createElement('img');
+                coffee4Image.src = "images/coffee4.jpg";
+                coffee4Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee4Image);
+                makeImageDraggable(coffee4Image);
+            }
+
+            for (let i = 0; i < image5Count; i++) {
+                const coffee5Image = document.createElement('img');
+                coffee5Image.src = "images/coffee5.jpg";
+                coffee5Image.className = 'coffee-img';
+                coffeeImagesDiv.appendChild(coffee5Image);
+                makeImageDraggable(coffee5Image);
+            }
+        };
+    </script>
+</body>
+</html>
