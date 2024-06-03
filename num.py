@@ -1,15 +1,20 @@
-from flask import Flask, jsonify, render_template, redirect, request, url_for
+from flask import Flask, jsonify, render_template, request
 import random
 
-num = Flask(__name__)
+app = Flask(__name__)
 
+# Generate a random number for the guessing game
 target_number = random.randint(1, 100)
 
-@num.route('/')
-def index():
+@app.route('/')
+def home():
+    return render_template('kodu.html')
+
+@app.route('/num')
+def num():
     return render_template('num.html')
 
-@num.route('/guess', methods=['POST'])
+@app.route('/guess', methods=['POST'])
 def guess():
     global target_number
     data = request.get_json()
@@ -21,9 +26,9 @@ def guess():
         message = "Liiga palju!"
     else:
         message = "Arvasidki ära! Genereerin uue numbri..."
-        target_number = random.randint(1, 100)  # Genereerib uue numbri järgmise mängu jaoks
+        target_number = random.randint(1, 100)  # Generate a new number for the next game
 
     return jsonify({"message": message})
 
 if __name__ == '__main__':
-    num.run(debug=True)
+    app.run(debug=True)
