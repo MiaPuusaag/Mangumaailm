@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title> Numbrimäng</title>
+    <style>
+        body{
+            background-color: rgb(239, 181, 209);
+        }
+        h1{
+            font-family: "Lucida Console", "Courier New", monospace;
+            color: rgb(176, 28, 107);
+            
+        }
+        label{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: rgb(217, 38, 155);
+            font-size: x-large;
+        }
+        h1.round1 {
+            border: 2px solid rgb(211, 50, 147);
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .header {
+            background-color: #ef76c2;
+            padding: 20px;
+            text-align: center;
+        }
+        .column{
+            float: left;
+            padding: 10px;
+        }
+        .column.side{
+            width: 15%;
+        }
+        .column.middle{
+            width: 70%;
+            text-align: center;
+            
+        }
+        .row::after{
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>NUMBRI ARVAMISE MÄNG</h1>
+        </div>
+    <div class="row">
+        <div class="column side">
+            <img src="https://images.ctfassets.net/ub3bwfd53mwy/5WFv6lEUb1e6kWeP06CLXr/acd328417f24786af98b1750d90813de/4_Image.jpg?w=750" alt="Kiisuke" style="width: 100px;height: 125spx;">
+            <img src="https://images.ctfassets.net/ub3bwfd53mwy/5zi8myLobtihb1cWl3tj8L/45a40e66765f26beddf7eeee29f74723/6_Image.jpg?w=750" style="height: 125px; width: 100px;">
+            <img src="https://image.petmd.com/files/styles/863x625/public/2023-04/kitten-development.jpeg" style="height: 125px; width: 100px;">
+            <img src="https://i.pinimg.com/564x/e0/1a/4d/e01a4d6e4efb0742fe789a39358af85e.jpg" style="height: 125px; width: 100px;">
+            <img src="https://i.pinimg.com/736x/cd/38/87/cd388756d9c7665861ebaad045f32451.jpg" style="height: 125px; width: 100px;">
+
+        </div>
+    <div class="column middle">
+    <form id="guessForm">
+        <label for="guess">Paku number (1-100):</label><br>
+        <input type="number" id="guess" name="guess" style="height: 35px; width: 50px;" max="100" required>
+        <button type="submit" style="background-color: rgb(232, 166, 220); color: rgb(123, 14, 74); height: 60px; width: 80px; font-size: x-large;">Paku &#129300</button>
+    </form>
+    <p id="result"></p>
+    <script>
+        document.getElementById('guessForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const guess = document.getElementById('guess').value;
+            const response = await fetch('/guess', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ guess: guess })
+            });
+            const data = await response.json();
+            document.getElementById('result').innerText = data.message;
+        });
+    </script>
+    </div>
+    </div>
+
+</body>
+</html>
