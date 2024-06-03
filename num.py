@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='images')
 
 # Generate a random number for the guessing game
 target_number = random.randint(1, 100)
