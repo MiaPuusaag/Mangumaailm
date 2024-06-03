@@ -208,7 +208,7 @@
         let image3Count = localStorage.getItem('image3Count') || 0;
         let image4Count = localStorage.getItem('image4Count') || 0;
         let image5Count = localStorage.getItem('image5Count') || 0;
-        let level = localStorage.getItem('level') || 1;
+        let level = localStorage.getItem('level') || 0;
         
         
         
@@ -255,11 +255,6 @@
         document.getElementById('image4CountValue').textContent = image4Count;
         document.getElementById('image5CountValue').textContent = image5Count;
         document.getElementById('levelValue').textContent = level;
-        
-    
-        function updateLevelDisplay() {
-            document.getElementById('levelValue').textContent = level;
-        }
 
 
         function increaseMoney() {
@@ -431,10 +426,6 @@
                     // Display " Congratulations, You won! " message
                     document.getElementById('congratulationsMessage').textContent = "Congratulations, You won!";
 
-                    level++;
-                    localStorage.setItem('level', level);
-                    updateLevelDisplay();
-
                     // Add click event listener to reset the game on click
                     document.getElementById('congratulationsMessage').textContent = "Congratulations, You won!";
                     document.getElementById('container').onclick = resetGameOnClick;
@@ -450,18 +441,23 @@
             img1.remove();
             img2.remove();
         }
+        
+        let m = 0;
 
         // Function to reset the game
         function resetGame() {
             // Clear local storage
-            localStorage.clear()
+            level++;
+            // Save level to local storage
+            localStorage.setItem('level', level);
 
-            // Reset coffee counts
-            document.getElementById('coffeeCountValue').textContent = 0;
-            document.getElementById('image2CountValue').textContent = 0;
-            document.getElementById('image3CountValue').textContent = 0;
-            document.getElementById('image4CountValue').textContent = 0;
-            document.getElementById('image5CountValue').textContent = 0;
+            // Clear other game data
+            localStorage.removeItem('money');
+            localStorage.removeItem('coffeeCount');
+            localStorage.removeItem('image2Count');
+            localStorage.removeItem('image3Count');
+            localStorage.removeItem('image4Count');
+            localStorage.removeItem('image5Count');
 
             // Remove all images from the image container
             const coffeeImagesDiv = document.getElementById('additional-coffee-images');
