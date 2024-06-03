@@ -161,7 +161,6 @@
         window.onload = function() {
             document.getElementById('rulesModal').style.display = "flex";
             
-            const coffeeImagesDiv = document.getElementById('additional-coffee-images');
             for (let i = 0; i < coffeeCount; i++) {
                 const coffeeImage = document.createElement('img');
                 coffeeImage.src = "images/coffee.jpg";
@@ -455,7 +454,7 @@
         // Function to reset the game
         function resetGame() {
             // Clear local storage
-            localStorage.clear();
+            localStorage.clear()
 
             // Reset coffee counts
             document.getElementById('coffeeCountValue').textContent = 0;
