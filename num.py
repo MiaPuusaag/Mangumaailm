@@ -3,7 +3,6 @@ import random
 
 app = Flask(__name__)
 
-# Generate a random number for the guessing game
 target_number = random.randint(1, 100)
 
 @app.route('/')
@@ -26,8 +25,7 @@ def guess():
         message = "Liiga palju!"
     else:
         message = "Arvasidki ära! Genereerin uue numbri..."
-        target_number = random.randint(1, 100)  # Generate a new number for the next game
-
+        target_number = random.randint(1, 100)  
     return jsonify({"message": message})
 
 if __name__ == '__main__':
