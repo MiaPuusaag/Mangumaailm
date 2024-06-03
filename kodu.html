@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mängumaailm</title>
+    <style>
+        .header {
+            background-color: #feacd4;
+            padding: 20px;
+            text-align: center;
+            font-size: xx-large;
+            font-family: serif;
+            color: #ea0888;
+
+        }
+        .column.left {
+            float: left;
+            width: 50%;
+            text-align: center;
+        }
+        .column.right {
+            float:right;
+            width: 50%;
+            text-align: center;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .topnav {
+            overflow: hidden;
+            background-color: #feacd4;
+            text-align: center;
+            font-size: x-large;
+        }
+        h1.round {
+            border-style: outset;
+            border-color: #ea0888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="round">Mängumaailm</h1>
+    </div>
+    <div class="topnav">
+        <b>Tere tulemast Mängumaailma!</b>
+        <p>Siin saad mängida numbrimängu ja kohvimängu. Lõbusat mängimist!</p>
+    </div>
+    <div class="column left">
+        <h2 style="color: #ea0888;">Numbrimäng</h2>
+        <p>Numbrimängus pead ära arvama arvuti poolt genereeritud numbri. Mängimiseks vajuta nupule!</p>
+        <a href="/num" target="_blank">
+            <button style="height: 50px; width: 100px; background-color: #feacd4; color: #ea0888;">Vajuta mind</button>
+        </a>
+    </div>
+    <div class="column right">
+        <h2 style="color: #ea0888;">Kohvimäng</h2>
+        <p>Kohvimängus pead...</p>
+        <a href="/index" target="_blank">
+            <button style="height: 50px; width: 100px; background-color: #feacd4; color: #ea0888;">Vajuta mind</button>
+        </a>
+    </div>
+    
+</body>
+</html>
