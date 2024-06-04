@@ -52,34 +52,22 @@
             padding: 5px;
             margin-top: 5px;
         }
-        #coffeeCount, #image2Count, #image3Count, #image4Count, #image5Count {
+        #level, #coffeeCount, #image2Count, #image3Count, #image4Count, #image5Count, #money {
             position: absolute;
             top: 10px;
-            left: 10px;
             background-color: rgba(255, 255, 255, 0.7);
             padding: 5px;
             margin-top: 5px;
         }
-        #coffeeCount {
-            left: 20px;
-        }
-        #image2Count {
-            left: 220px;
-        }
-        #image3Count {
-            left: 420px;
-        }
-        #image4Count {
-            left: 620px;
-        }
-        #image5Count {
-            left: 820px;
-        }
-        #money {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
+        #level { left: 1020px; }
+        #coffeeCount { left: 20px; }
+        #image2Count { left: 220px; }
+        #image3Count { left: 420px; }
+        #image4Count { left: 620px; }
+        #image5Count { left: 820px; }
+        #money { right: 10px; }
+
+
         #additional-coffee-images {
             display: flex;
             flex-wrap: wrap;
@@ -98,7 +86,6 @@
             width: 100%;
             height: 100%;
             overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0, 0, 0); /* Fallback color */
             background-color:   rgba(0,0,0,0.4); /* Black w/ opacity */
         }
         .modal-content {
@@ -158,50 +145,29 @@
             document.getElementById('rulesModal').style.display = "none";
         }
 
+
         window.onload = function() {
             document.getElementById('rulesModal').style.display = "flex";
+            const coffeeImagesDiv = document.getElementById('additional-coffee-images');
             
-            for (let i = 0; i < coffeeCount; i++) {
-                const coffeeImage = document.createElement('img');
-                coffeeImage.src = "images/coffee.jpg";
-                coffeeImage.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffeeImage);
-                makeImageDraggable(coffeeImage);
+            function addImages(imageCount, src) {
+                for (let i = 0; i < imageCount; i++) {
+                    const image = document.createElement('img');
+                    image.src = src;
+                    image.className = 'coffee-img';
+                    coffeeImagesDiv.appendChild(image);
+                    makeImageDraggable(image);
+                }
             }
 
-            for (let i = 0; i < image2Count; i++) {
-                const coffee2Image = document.createElement('img');
-                coffee2Image.src = "images/coffee2.jpg";
-                coffee2Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee2Image);
-                makeImageDraggable(coffee2Image);
-            }
-
-            for (let i = 0; i < image3Count; i++) {
-                const coffee3Image = document.createElement('img');
-                coffee3Image.src = "images/coffee3.jpg";
-                coffee3Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee3Image);
-                makeImageDraggable(coffee3Image);
-            }
-
-            for (let i = 0; i < image4Count; i++) {
-                const coffee4Image = document.createElement('img');
-                coffee4Image.src = "images/coffee4.jpg";
-                coffee4Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee4Image);
-                makeImageDraggable(coffee4Image);
-            }
-
-            for (let i = 0; i < image5Count; i++) {
-                const coffee5Image = document.createElement('img');
-                coffee5Image.src = "images/coffee5.jpg";
-                coffee5Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee5Image);
-                makeImageDraggable(coffee5Image);
-            }
+            addImages(coffeeCount, "images/coffee.jpg");
+            addImages(image2Count, "images/coffee2.jpg");
+            addImages(image3Count, "images/coffee3.jpg");
+            addImages(image4Count, "images/coffee4.jpg");
+            addImages(image5Count, "images/coffee5.jpg");
         };
         
+
         let money = localStorage.getItem('money');
         let coffeeCount = localStorage.getItem('coffeeCount') || 0;
         let image2Count = localStorage.getItem('image2Count') || 0;
@@ -212,41 +178,17 @@
         
         
         
-        if (level === null || isNaN(level)) {
-            level = 0;
-        } else {
-            level = parseInt(level);
+        function parseOrDefault(value, defaultValue) {
+            return (value === null || isNaN(value)) ? defaultValue : parseInt(value);
         }
-        if (money === null || isNaN(money)) {
-            money = 0;
-        } else {
-            money = parseInt(money);
-        }
-        if (coffeeCount === null || isNaN(coffeeCount)) {
-            coffeeCount = 0;
-        } else {
-            coffeeCount = parseInt(coffeeCount);
-        }
-        if (image2Count === null || isNaN(image2Count)) {
-            image2Count = 0;
-        } else {
-            image2Count = parseInt(image2Count);
-        }
-        if (image3Count === null || isNaN(image3Count)) {
-            image3Count = 0;
-        } else {
-            image3Count = parseInt(image3Count);
-        }
-        if (image4Count === null || isNaN(image4Count)) {
-            image4Count = 0;
-        } else {
-            image4Count = parseInt(image4Count);
-        }
-        if (image5Count === null || isNaN(image5Count)) {
-            image5Count = 0;
-        } else {
-            image5Count = parseInt(image5Count);
-        }
+
+        level = parseOrDefault(level, 0);
+        money = parseOrDefault(money, 0);
+        coffeeCount = parseOrDefault(coffeeCount, 0);
+        image2Count = parseOrDefault(image2Count, 0);
+        image3Count = parseOrDefault(image3Count, 0);
+        image4Count = parseOrDefault(image4Count, 0);
+        image5Count = parseOrDefault(image5Count, 0);
 
         document.getElementById('moneyValue').textContent = money;
         document.getElementById('coffeeCountValue').textContent = coffeeCount;
@@ -262,6 +204,7 @@
             document.getElementById('moneyValue').textContent = money;
             localStorage.setItem('money', money);
         }
+
 
         function buyCoffee() {
             const coffeePrice = 10;
@@ -345,6 +288,7 @@
 
         }
 
+
         function checkCollisions(movingImg) {
             const coffeeImages = document.getElementsByClassName('coffee-img');
             for (let img of coffeeImages) {
@@ -354,6 +298,7 @@
                 }
             }
         }
+
 
         function isColliding(img1, img2) {
             const rect1 = img1.getBoundingClientRect();
@@ -368,6 +313,7 @@
             return distance <= collisionDistance;
         }
 
+        
         function handleCollision(img1, img2) {
             const src1 = img1.src.split('/').pop();
             const src2 = img2.src.split('/').pop();
@@ -434,13 +380,12 @@
                     img1.style.width = newSize + 'px';
                     img1.style.height = newSize + 'px';
                 }
-
-                
             }
 
             img1.remove();
             img2.remove();
         }
+        
         
         let m = 0;
 
@@ -452,21 +397,16 @@
             localStorage.setItem('level', level);
 
             // Clear other game data
-            localStorage.removeItem('money');
-            localStorage.removeItem('coffeeCount');
-            localStorage.removeItem('image2Count');
-            localStorage.removeItem('image3Count');
-            localStorage.removeItem('image4Count');
-            localStorage.removeItem('image5Count');
+            ['money', 'coffeeCount', 'image2Count', 'image3Count', 'image4Count', 'image5Count'].forEach(item => localStorage.removeItem(item));
 
             // Remove all images from the image container
             const coffeeImagesDiv = document.getElementById('additional-coffee-images');
             coffeeImagesDiv.innerHTML = '';
 
-
             // Hide the congratulations message
             document.getElementById('congratulationsMessage').textContent = '';
         }
+
 
         // Function to reset the game on click
         function resetGameOnClick(event) {
@@ -474,64 +414,20 @@
             location.reload();
         }
 
-        
 
         function addNewImage(imageSrc, left, top, width = '200px', height = '200px') {
             const newImage = document.createElement('img');
             newImage.src = "images/" + imageSrc;
             newImage.className = 'coffee-img';
             newImage.style.position = 'absolute';
-            newImage.style.left = left;
-            newImage.style.top = top;
-            newImage.style.width = width;
-            newImage.style.height = height;
+            Object.assign(newImage.style, { left, top, width, height });
+
             document.body.appendChild(newImage);
 
             makeImageDraggable(newImage);
         }
 
-        window.onload = function() {
-            const coffeeImagesDiv = document.getElementById('additional-coffee-images');
-            for (let i = 0; i < coffeeCount; i++) {
-                const coffeeImage = document.createElement('img');
-                coffeeImage.src = "images/coffee.jpg";
-                coffeeImage.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffeeImage);
-                makeImageDraggable(coffeeImage);
-            }
-
-            for (let i = 0; i < image2Count; i++) {
-                const coffee2Image = document.createElement('img');
-                coffee2Image.src = "images/coffee2.jpg";
-                coffee2Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee2Image);
-                makeImageDraggable(coffee2Image);
-            }
-
-            for (let i = 0; i < image3Count; i++) {
-                const coffee3Image = document.createElement('img');
-                coffee3Image.src = "images/coffee3.jpg";
-                coffee3Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee3Image);
-                makeImageDraggable(coffee3Image);
-            }
-
-            for (let i = 0; i < image4Count; i++) {
-                const coffee4Image = document.createElement('img');
-                coffee4Image.src = "images/coffee4.jpg";
-                coffee4Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee4Image);
-                makeImageDraggable(coffee4Image);
-            }
-
-            for (let i = 0; i < image5Count; i++) {
-                const coffee5Image = document.createElement('img');
-                coffee5Image.src = "images/coffee5.jpg";
-                coffee5Image.className = 'coffee-img';
-                coffeeImagesDiv.appendChild(coffee5Image);
-                makeImageDraggable(coffee5Image);
-            }
-        };
+        
     </script>
 </body>
 </html>
